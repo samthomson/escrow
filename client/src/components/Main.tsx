@@ -1,5 +1,6 @@
 import React from 'react';
 import ConnectAccount from './ConnectAccount'
+import EscrowContractInteraction from './EscrowContractInteraction'
 import { useWeb3React } from '@web3-react/core'
 
 
@@ -12,7 +13,7 @@ const Main: React.FC = () => {
 			<ConnectAccount />
 			<hr />
 			{!account && <>[not connected]</>}
-			{!!account && <>[connected {account}]</>}
+			{!!account && <EscrowContractInteraction />}
 		</div>
 	);
 };
