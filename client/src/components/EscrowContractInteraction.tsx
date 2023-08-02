@@ -2,24 +2,13 @@ import React from 'react';
 import { ethers } from 'ethers';
 import { useWeb3React } from '@web3-react/core'
 
-type address = string
-type EscrowAgreement = {
-	initiator: {
-		initiatorAddress: address
-		currency: address
-		suppliedAmount: number
-	}
-	counterparty: {
-		currency: address
-		requiredAmount: number
-	}
-	isFilled: boolean
-}
+import * as Types from '../declarations'
+import EscrowAgreement from './EscrowAgreement'
 
 const EscrowContractInteraction: React.FC = () => {
 	const [agreementsCount, setAgreementsCount] = React.useState<number | undefined>(undefined);
 
-	const [agreements, setAgreements] = React.useState<EscrowAgreement[]>([])
+	const [agreements, setAgreements] = React.useState<Types.EscrowAgreement[]>([])
 
 	const { library, account } = useWeb3React();
 
@@ -184,7 +173,7 @@ const EscrowContractInteraction: React.FC = () => {
 		
 		setAgreementsCount(agreementsCounter)
 
-		const agreements: EscrowAgreement[] = [];
+		const agreements: Types.EscrowAgreement[] = [];
 		setAgreements(agreements)
 		for (let i = 0; i < agreementsCounter; i++) {
 			// @ts-ignore
@@ -227,14 +216,7 @@ const EscrowContractInteraction: React.FC = () => {
 		<div>
 			<h1>Aggreements: {agreementsCount}</h1>
 			{agreements.map((agreement, key) => <div key={key}>
-				initiatorAddress: {agreement.initiator.initiatorAddress}<br/>
-				currency: {agreement.initiator.currency}<br/>
-				suppliedAmount: {agreement.initiator.suppliedAmount}<br/>
-				<br/>
-				currency: {agreement.counterparty.currency}<br/>
-				requiredAmount: {agreement.counterparty.requiredAmount}<br/>
-				<br/>
-				filled: {String(agreement.isFilled)}<br/>
+				<EscrowAgreement agreement={agreement} />
 			</div>)}
 			<hr />
 			{
