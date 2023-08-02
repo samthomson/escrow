@@ -11,12 +11,13 @@ const EscrowAgreement: React.FC<EscrowAgreementProps> = ({agreement}) => {
 
   return (
     <div className='card'>
-		initiatorAddress: {agreement.initiator.initiatorAddress}<br/>
-		currency: {agreement.initiator.currency}<br/>
-		suppliedAmount: {agreement.initiator.suppliedAmount}<br/>
-		<br/>
-		currency: {agreement.counterparty.currency}<br/>
-		requiredAmount: {agreement.counterparty.requiredAmount}<br/>
+    	<div className='subtitle'>initiatorAddress: {agreement.initiator.initiatorAddress}</div>
+		
+    	<div className='subtitle'>offers</div> <span className='neon-text'>{agreement.initiator.suppliedAmount} {agreement.initiator.currency}</span> <br/>
+		
+		<br/><br/>
+    	<div className='subtitle'>wants in return</div>
+		<span className='neon-text'>{agreement.counterparty.requiredAmount}  {agreement.counterparty.currency}</span>
 		<br/>
 		filled: {String(agreement.isFilled)}<br/>
     </div>

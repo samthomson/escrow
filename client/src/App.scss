@@ -1,0 +1,95 @@
+// Define base colors
+$background-color: #000; 
+$primary-color: #252525; 
+$secondary-color: #1b1b1b;
+$highlight-color: #7e003b;
+$accent-color: #fff;
+$neon-cyan: #0ff;
+
+$spacing: 10px;
+
+// Import the Blade Runner font
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    background-color: $background-color;
+    color: $accent-color;
+    // overflow: hidden;
+    padding: $spacing;
+}
+
+// Style for container
+.container {
+    background-color: $primary-color;
+    padding: 20px;
+    border: 1px solid $secondary-color;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .title {
+    // font-size: 2em;
+    // color: $primary-font-color;
+  }
+
+  .connection {
+    // Style your connection button as desired
+  }
+}
+
+
+
+#agreements {
+  display: grid;
+  // grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: $spacing;
+}
+
+// Neon buttons
+.button {
+    font-family: 'Orbitron', sans-serif;
+    background: $highlight-color;
+    color: $background-color;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    cursor: pointer;
+    &:hover {
+        background-color: darken($highlight-color, 10%);
+    }
+}
+
+// Title styles
+.title {
+    text-shadow: 2px 2px $secondary-color;
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+// Subtitle styles
+.subtitle {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+// Panel with Asian-influenced border
+.card {
+    border: 2px solid $highlight-color;
+    padding: 20px;
+    background-color: $secondary-color;
+}
+
+// Style for text that should look like neon
+.neon-text {
+    color: $neon-cyan;
+    text-shadow:
+    0 0 5px $highlight-color,
+    0 0 10px $highlight-color,
+    0 0 15px $highlight-color,
+    0 0 20px $highlight-color;
+}

@@ -9,8 +9,11 @@ const Main: React.FC = () => {
 
 	return (
 		<div>
-			<h1>Escrow dapp</h1>
-			<ConnectAccount />
+			<div className='header'>
+				<div className='title'>Escrow dapp</div>
+				<div className='connection'><ConnectAccount /></div>
+			</div>
+			
 			<hr />
 			{!account && <>[not connected]</>}
 			{!!account && <EscrowContractInteraction />}

@@ -15,6 +15,7 @@ export default function ConnectAccount() {
         <div>
             {!account ? (
                 <button
+                    className='button'
                     onClick={() => activate(injected)}
                 >
                     Connect to MetaMask

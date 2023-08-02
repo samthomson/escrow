@@ -213,17 +213,19 @@ const EscrowContractInteraction: React.FC = () => {
 	}
 
 	return (
-		<div>
+		<div className='container'>
 			<h1>Aggreements: {agreementsCount}</h1>
-			{agreements.map((agreement, key) => <div key={key}>
-				<EscrowAgreement agreement={agreement} />
-			</div>)}
+			<div id="agreements">
+				{agreements.map((agreement, key) => <div key={key}>
+					<EscrowAgreement agreement={agreement} />
+				</div>)}
+			</div>
 			<hr />
 			{
 				isConnected && <>
 					<form onSubmit={onSubmitAggreement}>
 						{/* <input type="text" value={messageInput} onChange={e => setMessageInput(e.currentTarget.value)} /> */}
-						<button type="submit">submit agreement</button>
+						<button type="submit" className='button'>submit new agreement</button>
 					</form>
 				</>
 			}
