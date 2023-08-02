@@ -11,11 +11,18 @@ contract("Escrow", function (/* accounts */) {
     return assert.isTrue(true);
   });
 
-  it("whoAmI returns an address", async () => {
+  it("can create an escrow aggreement", async () => {
     const escrowInstance = await Escrow.deployed();
 
-    const whoAmI = await escrowInstance.whoAmI();
+    const creationResult = await escrowInstance.createAgreement(
+      // todo
+    );
 
-    assert.equal(typeof whoAmI, 'string')
+    // todo
+    // assert.equal(typeof whoAmI, 'string')
+  })
+
+  it("can retrieve all escrow aggreements", async () => {
+    // todo
   })
 });
