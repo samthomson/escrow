@@ -17,8 +17,8 @@ const contract = new web3.eth.Contract(contractABI, ESCROW_DEPLOYED_ADDRESS);
 
 // Use the methods provided by web3.js to interact with the contract
 const test = async () => {
-	const res = await contract.methods.whoAmI().call()
+	// const res = await contract.methods.whoAmI().call()
 
-	console.log('res', res)
+	// console.log('res', res)
 }
 test()

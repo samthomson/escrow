@@ -1,5 +1,5 @@
-const MyContract = artifacts.require("Escrow");
+const EscrowContract = artifacts.require("Escrow");
 
 module.exports = function (deployer) {
-	deployer.deploy(MyContract);
+	deployer.deploy(EscrowContract);
 };
