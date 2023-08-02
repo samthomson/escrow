@@ -163,60 +163,91 @@ const EscrowContractInteraction: React.FC = () => {
 
 	const contractAddress = '0xf7e5B5AAD65e55bde19F678ee305Ec1c0dfa2B7E';
 
-	const escrowContract = new ethers.Contract(contractAddress, contractABI, library.getSigner());
+	const escrowContractRef = React.useRef<ethers.Contract | undefined>();
 
 	
 
 	const fetchAgreements = React.useCallback(async () => {
 		// @ts-ignore
-		const agreementsCounter = Number(await escrowContract.agreementCounter());
+		const agreementsCounter = Number(await escrowContractRef.current.agreementCounter());
+
+		console.log('got a count of agreements:', agreementsCounter)
 		
 		setAgreementsCount(agreementsCounter)
 
 		const agreements: Types.EscrowAgreement[] = [];
-		setAgreements(agreements)
+		// setAgreements(agreements)
 		for (let i = 0; i < agreementsCounter; i++) {
 			// @ts-ignore
-			const agreement = await escrowContract.agreements(i);
+			const agreement = await escrowContractRef.current.agreements(i);
 			agreements.push(agreement);
+			console.log(`fetched agreement ${i}`, agreement)
 		}
 		setAgreements(agreements)
-		return agreements;
-	},[])
+		// return agreements;
+	},[escrowContractRef.current])
 
 
+	// Call this function when your component is mounted
+	const subscribeToEvents = () => {
+		// Replace 'AgreementCreated' with your actual event name
+		escrowContractRef.current?.on("AgreementCreated", () => {
+			console.log("AGREEMENT CREATED")
+			fetchAgreements();
+		});
+	};
+
+	// Remember to also unsubscribe when the component is unmounted
+	const unsubscribeFromEvents = () => {
+		escrowContractRef.current?.off("AgreementCreated");
+	};
 
 	React.useEffect(() => {
 		if (library && account) {
+			escrowContractRef.current = new ethers.Contract(contractAddress, contractABI, library.getSigner());
 			fetchAgreements()
+			subscribeToEvents()
 		}
-	}, [library, account, fetchAgreements])
+
+		return () => {
+			unsubscribeFromEvents()
+		}
+	}, [library, account])
 
 
 	const isConnected = !!account;
 
-	const onSubmitAggreement = async (event: { preventDefault: () => void; }) => {
+	const onSubmitAggreement = React.useCallback(async (event: { preventDefault: () => void; }) => {
 		event.preventDefault();
-		
-        const initiatorCurrency = '0x36e6040b4186F9f0Ad9b3c25a9C1c9EE58112D0a'
-        const initiatorSuppliedAmount = ethers.parseEther("1")
-        const counterPartyCurrency = '0x540053115bA579EB32aCddfaFe2d121340553411'
-        const counterPartyRequiredAmount = ethers.parseEther("1000")
 
-		await escrowContract.createAgreement(
-			initiatorCurrency,
-         	initiatorSuppliedAmount,
-			counterPartyCurrency,
-			counterPartyRequiredAmount,
-			{ value: ethers.parseEther("1")}
-		);
-	}
+		try {
+			if (!!escrowContractRef.current) {
+				const initiatorCurrency = '0x36e6040b4186F9f0Ad9b3c25a9C1c9EE58112D0a'
+				const initiatorSuppliedAmount = ethers.parseEther("1")
+				const counterPartyCurrency = '0x540053115bA579EB32aCddfaFe2d121340553411'
+				const counterPartyRequiredAmount = ethers.parseEther("1000")
+
+				const receipt = await escrowContractRef.current.createAgreement(
+					initiatorCurrency,
+					initiatorSuppliedAmount,
+					counterPartyCurrency,
+					counterPartyRequiredAmount,
+					{ value: ethers.parseEther("1")}
+				);
+
+				console.log('receipt', receipt);
+			}
+		} catch (error) {
+			console.log('An error occurred: ', error);
+		}
+	}, [escrowContractRef.current])
 
 	return (
 		<div className='container'>
 			<h1>Aggreements: {agreementsCount}</h1>
 			<div id="agreements">
 				{agreements.map((agreement, key) => <div key={key}>
+					{key}<br/>
 					<EscrowAgreement agreement={agreement} />
 				</div>)}
 			</div>
