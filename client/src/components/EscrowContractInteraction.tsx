@@ -2,49 +2,249 @@ import React from 'react';
 import { ethers } from 'ethers';
 import { useWeb3React } from '@web3-react/core'
 
+type address = string
+type EscrowAgreement = {
+	initiator: {
+		initiatorAddress: address
+		currency: address
+		suppliedAmount: number
+	}
+	counterparty: {
+		currency: address
+		requiredAmount: number
+	}
+	isFilled: boolean
+}
 
 const EscrowContractInteraction: React.FC = () => {
-	const [contractData, setContractData] = React.useState(null);
+	const [agreementsCount, setAgreementsCount] = React.useState<number | undefined>(undefined);
+
+	const [agreements, setAgreements] = React.useState<EscrowAgreement[]>([])
 
 	const { library, account } = useWeb3React();
 
-	// const contractABI = [
-	// 	{
-	// 		"inputs": [],
-	// 		"name": "whoAmI",
-	// 		"outputs": [
-	// 			{
-	// 				"internalType": "address",
-	// 				"name": "",
-	// 				"type": "address"
-	// 			}
-	// 		],
-	// 		"stateMutability": "view",
-	// 		"type": "function",
-	// 		"constant": true
-	// 	}
-	// ]
+	const contractABI = [
+		{
+		  "anonymous": false,
+		  "inputs": [
+			{
+			  "indexed": false,
+			  "internalType": "uint256",
+			  "name": "agreementId",
+			  "type": "uint256"
+			},
+			{
+			  "indexed": false,
+			  "internalType": "address",
+			  "name": "initiatorAddress",
+			  "type": "address"
+			},
+			{
+			  "indexed": false,
+			  "internalType": "address",
+			  "name": "initiatorCurrency",
+			  "type": "address"
+			},
+			{
+			  "indexed": false,
+			  "internalType": "uint256",
+			  "name": "initiatorSuppliedAmount",
+			  "type": "uint256"
+			},
+			{
+			  "indexed": false,
+			  "internalType": "address",
+			  "name": "counterpartyCurrency",
+			  "type": "address"
+			},
+			{
+			  "indexed": false,
+			  "internalType": "uint256",
+			  "name": "counterpartyRequiredAmount",
+			  "type": "uint256"
+			}
+		  ],
+		  "name": "AgreementCreated",
+		  "type": "event"
+		},
+		{
+		  "inputs": [],
+		  "name": "agreementCounter",
+		  "outputs": [
+			{
+			  "internalType": "uint256",
+			  "name": "",
+			  "type": "uint256"
+			}
+		  ],
+		  "stateMutability": "view",
+		  "type": "function",
+		  "constant": true
+		},
+		{
+		  "inputs": [
+			{
+			  "internalType": "uint256",
+			  "name": "",
+			  "type": "uint256"
+			}
+		  ],
+		  "name": "agreements",
+		  "outputs": [
+			{
+			  "components": [
+				{
+				  "internalType": "address",
+				  "name": "initiatorAddress",
+				  "type": "address"
+				},
+				{
+				  "internalType": "address",
+				  "name": "currency",
+				  "type": "address"
+				},
+				{
+				  "internalType": "uint256",
+				  "name": "suppliedAmount",
+				  "type": "uint256"
+				}
+			  ],
+			  "internalType": "struct Escrow.Initiator",
+			  "name": "initiator",
+			  "type": "tuple"
+			},
+			{
+			  "components": [
+				{
+				  "internalType": "address",
+				  "name": "currency",
+				  "type": "address"
+				},
+				{
+				  "internalType": "uint256",
+				  "name": "requiredAmount",
+				  "type": "uint256"
+				}
+			  ],
+			  "internalType": "struct Escrow.Counterparty",
+			  "name": "counterparty",
+			  "type": "tuple"
+			},
+			{
+			  "internalType": "bool",
+			  "name": "isFilled",
+			  "type": "bool"
+			}
+		  ],
+		  "stateMutability": "view",
+		  "type": "function",
+		  "constant": true
+		},
+		{
+		  "inputs": [
+			{
+			  "internalType": "address",
+			  "name": "initiatorCurrency",
+			  "type": "address"
+			},
+			{
+			  "internalType": "uint256",
+			  "name": "initiatorSuppliedAmount",
+			  "type": "uint256"
+			},
+			{
+			  "internalType": "address",
+			  "name": "counterPartyCurrency",
+			  "type": "address"
+			},
+			{
+			  "internalType": "uint256",
+			  "name": "counterPartyRequiredAmount",
+			  "type": "uint256"
+			}
+		  ],
+		  "name": "createAgreement",
+		  "outputs": [],
+		  "stateMutability": "payable",
+		  "type": "function",
+		  "payable": true
+		}
+	] as const
 
 
-	// const contractAddress = '0xCC496B2BE6DB2398A661d9d13CC378B132289826';
+	const contractAddress = '0xf7e5B5AAD65e55bde19F678ee305Ec1c0dfa2B7E';
+
+	const escrowContract = new ethers.Contract(contractAddress, contractABI, library.getSigner());
+
+	
+
+	const fetchAgreements = React.useCallback(async () => {
+		// @ts-ignore
+		const agreementsCounter = Number(await escrowContract.agreementCounter());
+		
+		setAgreementsCount(agreementsCounter)
+
+		const agreements: EscrowAgreement[] = [];
+		setAgreements(agreements)
+		for (let i = 0; i < agreementsCounter; i++) {
+			// @ts-ignore
+			const agreement = await escrowContract.agreements(i);
+			agreements.push(agreement);
+		}
+		setAgreements(agreements)
+		return agreements;
+	},[])
+
 
 
 	React.useEffect(() => {
 		if (library && account) {
-			// const contract = new ethers.Contract(contractAddress, contractABI, library.getSigner());
-
-			// replace 'myMethod' with the name of your contract's method you want to call
-			// contract.whoAmI().then((data) => {
-			// 	setContractData(data);
-			// });
+			fetchAgreements()
 		}
-	}, [library, account])
+	}, [library, account, fetchAgreements])
 
 
+	const isConnected = !!account;
+
+	const onSubmitAggreement = async (event: { preventDefault: () => void; }) => {
+		event.preventDefault();
+		
+        const initiatorCurrency = '0x36e6040b4186F9f0Ad9b3c25a9C1c9EE58112D0a'
+        const initiatorSuppliedAmount = ethers.parseEther("1")
+        const counterPartyCurrency = '0x540053115bA579EB32aCddfaFe2d121340553411'
+        const counterPartyRequiredAmount = ethers.parseEther("1000")
+
+		await escrowContract.createAgreement(
+			initiatorCurrency,
+         	initiatorSuppliedAmount,
+			counterPartyCurrency,
+			counterPartyRequiredAmount,
+			{ value: ethers.parseEther("1")}
+		);
+	}
 
 	return (
 		<div>
-			<h1>Contract Data: {contractData}</h1>
+			<h1>Aggreements: {agreementsCount}</h1>
+			{agreements.map((agreement, key) => <div key={key}>
+				initiatorAddress: {agreement.initiator.initiatorAddress}<br/>
+				currency: {agreement.initiator.currency}<br/>
+				suppliedAmount: {agreement.initiator.suppliedAmount}<br/>
+				<br/>
+				currency: {agreement.counterparty.currency}<br/>
+				requiredAmount: {agreement.counterparty.requiredAmount}<br/>
+				<br/>
+				filled: {String(agreement.isFilled)}<br/>
+			</div>)}
+			<hr />
+			{
+				isConnected && <>
+					<form onSubmit={onSubmitAggreement}>
+						{/* <input type="text" value={messageInput} onChange={e => setMessageInput(e.currentTarget.value)} /> */}
+						<button type="submit">submit agreement</button>
+					</form>
+				</>
+			}
 		</div>
 	);
 };
