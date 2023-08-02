@@ -22,6 +22,9 @@ contract Escrow {
     mapping(uint256 => Agreement) public agreements;
     uint256 public agreementCounter = 0;
 
+    event AgreementCreated(uint256 agreementId, address initiatorAddress, address initiatorCurrency, uint256 initiatorSuppliedAmount, address counterpartyCurrency, uint256 counterpartyRequiredAmount);
+
+
     function createAgreement(
         // address,
         address initiatorCurrency,
@@ -51,6 +54,9 @@ contract Escrow {
         );
 
         agreements[agreementCounter] = newAgg;
-        agreementCounter += 1;
+
+        emit AgreementCreated(agreementCounter, msg.sender, initiatorCurrency, initiatorSuppliedAmount, counterPartyCurrency, counterPartyRequiredAmount);
+
+        agreementCounter += 1;        
     }
 }
