@@ -2,9 +2,55 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Escrow {
-    // constructor() public {}
+    struct Initiator {
+        address initiatorAddress;
+        address currency;
+        uint256 suppliedAmount;
+    }
 
-    function whoAmI() public view returns (address) {
-        return msg.sender;
+    struct Counterparty {
+        address currency;
+        uint256 requiredAmount;
+    }
+
+    struct Agreement {
+        Initiator initiator;
+        Counterparty counterparty;
+        bool isFilled;
+    }
+
+    mapping(uint256 => Agreement) public agreements;
+    uint256 public agreementCounter = 0;
+
+    function createAgreement(
+        // address,
+        address initiatorCurrency,
+        uint256 initiatorSuppliedAmount,
+        address counterPartyCurrency,
+        uint256 counterPartyRequiredAmount
+    ) public payable {
+        require(
+            msg.value == initiatorSuppliedAmount,
+            "Sent amount does not match the supplied amount"
+        );
+
+        Initiator memory newInitiator = Initiator(
+            msg.sender,
+            initiatorCurrency,
+            initiatorSuppliedAmount
+        );
+        Counterparty memory newCounterparty = Counterparty(
+            counterPartyCurrency,
+            counterPartyRequiredAmount
+        );
+
+        Agreement memory newAgg = Agreement(
+            newInitiator,
+            newCounterparty,
+            false
+        );
+
+        agreements[agreementCounter] = newAgg;
+        agreementCounter += 1;
     }
 }
