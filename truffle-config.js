@@ -28,13 +28,13 @@ module.exports = {
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
     },
-    optimismGoerli: {
-      provider: () => new HDWalletProvider({ mnemonic: { phrase: MNEMONIC }, providerOrUrl: `https://opt-goerli.g.alchemy.com/v2/${ALCHEMY_OPTIMISM_GOERLI_KEY}`, addressIndex: 1, numberOfAddresses: 1 }),
-      network_id: 420,
-      confirmations: 2,
-      timeoutBlocks: 200,
-      skipDryRun: true
-    },
+    // optimismGoerli: {
+    //   provider: () => new HDWalletProvider({ mnemonic: { phrase: MNEMONIC }, providerOrUrl: `https://opt-goerli.g.alchemy.com/v2/${ALCHEMY_OPTIMISM_GOERLI_KEY}`, addressIndex: 1, numberOfAddresses: 1 }),
+    //   network_id: 420,
+    //   confirmations: 2,
+    //   timeoutBlocks: 200,
+    //   skipDryRun: true
+    // },
     //
     // An additional network, but with some advanced options…
     // advanced: {
