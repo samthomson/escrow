@@ -9,7 +9,7 @@ const Main: React.FC = () => {
 
 	return (
 		<div>
-			<h1>This is the Main Component</h1>
+			<h1>Escrow dapp</h1>
 			<ConnectAccount />
 			<hr />
 			{!account && <>[not connected]</>}

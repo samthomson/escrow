@@ -3,7 +3,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { InjectedConnector } from '@web3-react/injected-connector'
 
 
-export const injected = new InjectedConnector({ supportedChainIds: [420] })
+export const injected = new InjectedConnector({ supportedChainIds: [1337] })
 
 const formatAddress = (address: string) =>
     address.replace(/(.{9}).{3,}(.{7})/, '$1...$2')
