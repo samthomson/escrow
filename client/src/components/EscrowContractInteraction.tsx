@@ -273,7 +273,7 @@ const EscrowContractInteraction: React.FC = () => {
 
 
 	// escrow contract 0x
-	const contractAddress = '0xC0D9E81c5FB957a7b93058Ae995Ee931d47DC903';
+	const contractAddress = '0x03ad83d3e9E6951Ef175ddC21402A82f94b22870';
 
 	const escrowContractRef = React.useRef<ethers.Contract | undefined>();
 
