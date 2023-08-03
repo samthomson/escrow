@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 contract Escrow {
 
     using SafeERC20 for IERC20;
-    
+
     struct Initiator {
         address initiatorAddress;
         address currency;
@@ -38,10 +38,6 @@ contract Escrow {
         address counterPartyCurrency,
         uint256 counterPartyRequiredAmount
     ) public payable {
-        require(
-            msg.value == initiatorSuppliedAmount,
-            "Sent amount does not match the supplied amount"
-        );
         
         IERC20 token = IERC20(initiatorCurrency);
         
