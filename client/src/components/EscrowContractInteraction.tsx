@@ -247,7 +247,7 @@ const EscrowContractInteraction: React.FC = () => {
 			<h1>Aggreements: {agreementsCount}</h1>
 			<div id="agreements">
 				{agreements.map((agreement, key) => <div key={key}>
-					{key}<br/>
+					{/* {key}<br/> */}
 					<EscrowAgreement agreement={agreement} myAddress={account as Types.Address} />
 				</div>)}
 			</div>
