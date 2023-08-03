@@ -1,12 +1,12 @@
-type address = string
+export type Address = string
 export type EscrowAgreement = {
 	initiator: {
-		initiatorAddress: address
-		currency: address
+		initiatorAddress: Address
+		currency: Address
 		suppliedAmount: number
 	}
 	counterparty: {
-		currency: address
+		currency: Address
 		requiredAmount: number
 	}
 	isFilled: boolean
