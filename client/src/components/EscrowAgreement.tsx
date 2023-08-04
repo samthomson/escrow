@@ -5,6 +5,7 @@ import { useWeb3React } from '@web3-react/core'
 
 import * as Types from '../declarations'
 import { ERC20ABI } from './EscrowContractInteraction'
+import * as HelperUtil from '../helper'
 
 interface EscrowAgreementProps {
 	id: number
@@ -20,10 +21,16 @@ const EscrowAgreement: React.FC<EscrowAgreementProps> = ({ id, agreement, myAddr
 	const isMyAgreement = agreement.initiator.initiatorAddress === myAddress
 	const { isFilled, initiator, counterparty, isCancelled } = agreement
 	const { initiatorAddress, suppliedAmount, currency: initiatorCurrency } = initiator
-	const suppliedAmountWhole = ethers.formatUnits(suppliedAmount.toString(), 18)
 
 	const { requiredAmount, currency: counterpartyCurrency } = counterparty
-	const requiredAmountWhole = ethers.formatUnits(requiredAmount.toString(), 18)
+
+	const initiatorToken = HelperUtil.tokenFromAddress(initiatorCurrency)
+	const counterpartyToken = HelperUtil.tokenFromAddress(counterpartyCurrency)
+
+
+	const suppliedAmountWhole = ethers.formatUnits(suppliedAmount.toString(), initiatorToken?.decimals)
+
+	const requiredAmountWhole = ethers.formatUnits(requiredAmount.toString(), counterpartyToken?.decimals)
 
 	const cancelAgreement = async (id: number) => {
 		// event.preventDefault();
@@ -65,12 +72,12 @@ const EscrowAgreement: React.FC<EscrowAgreementProps> = ({ id, agreement, myAddr
 			</div>
 			<hr />
 			<div className='subtitle'>offers</div>
-			<span className='neon-text'>{(+suppliedAmountWhole).toLocaleString()}</span> x <span className='neon-text'>{initiatorCurrency}</span>
+			<span className='neon-text'>{(+suppliedAmountWhole).toLocaleString()}</span> x <span className='neon-text'>{initiatorCurrency} {initiatorToken && <>({initiatorToken.name})</>}</span>
 			<br />
 			<br />
 			<br />
 			<div className='subtitle'>wants in return</div>
-			<span className='neon-text'>{(+requiredAmountWhole).toLocaleString()}</span>  of <span className='neon-text'>{counterpartyCurrency}</span>
+			<span className='neon-text'>{(+requiredAmountWhole).toLocaleString()}</span>  of <span className='neon-text'>{counterpartyCurrency} {counterpartyToken && <>({counterpartyToken.name})</>}</span>
 			<br />
 			<br />
 			{!isCancelled && <>

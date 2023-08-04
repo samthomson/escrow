@@ -4,7 +4,8 @@ import { useWeb3React } from '@web3-react/core'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useForm } from '@mantine/form';
 
-import { ERC20ABI, tokens as tokenList } from './EscrowContractInteraction'
+import { ERC20ABI } from './EscrowContractInteraction'
+import * as HelperUtil from '../helper'
 
 interface AgreementFormProps {
 	escrowContract: Contract
@@ -41,11 +42,20 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 		const counterPartyCurrency = form.values.counterPartyCurrency
 		const counterPartyRequiredAmount = form.values.counterPartyRequiredAmount
 
+
+		const initiatorToken = HelperUtil.tokenFromAddress(initiatorCurrency)
+		const counterpartyToken = HelperUtil.tokenFromAddress(counterPartyCurrency)
+
+		if (!initiatorToken || !counterpartyToken) {
+			alert('tokens not found, can not proceed without knowing decimals')
+			return
+		}
+
 		try {
 			if (!!escrowContract) {
 				// todo: get decimal amount intelligently
-				const biInitiatorSuppliedAmount = ethers.parseUnits(`${initiatorSuppliedAmount}`, 18)
-				const biCounterPartyRequiredAmount = ethers.parseUnits(`${counterPartyRequiredAmount}`, 18)
+				const biInitiatorSuppliedAmount = ethers.parseUnits(`${initiatorSuppliedAmount}`, initiatorToken.decimals)
+				const biCounterPartyRequiredAmount = ethers.parseUnits(`${counterPartyRequiredAmount}`, counterpartyToken.decimals)
 
 				// const bnInitiatorSuppliedAmount = BigNumber.from(ethers.parseEther(`${initiatorSuppliedAmount}`))
 				// const bnCounterPartyRequiredAmount = BigNumber.from(ethers.parseEther(`${counterPartyRequiredAmount}`))
@@ -65,10 +75,10 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 
 
 				// Calculate new allowance
-				const newAllowance = ethers.formatUnits(currentAllowance.add(biInitiatorSuppliedAmount).toString(), 18);
+				const newAllowance = ethers.formatUnits(currentAllowance.add(biInitiatorSuppliedAmount).toString(), initiatorToken.decimals);
 
 				const newAllowanceToString = newAllowance.toString()
-				const newAllowanceParsed = ethers.parseUnits(newAllowanceToString, 18)
+				const newAllowanceParsed = ethers.parseUnits(newAllowanceToString, initiatorToken.decimals)
 
 				console.log('approvals', {
 					currentAllowance, newAllowance, biInitiatorSuppliedAmount,
@@ -109,7 +119,7 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 					className="your-input-class"
 				>
 					<option value="">Select token address</option>
-					{tokenList.map((token, key) => <option key={key} value={token.address}>{token.address} ({token.name})</option>)}
+					{HelperUtil.tokens.map((token, key) => <option key={key} value={token.address}>{token.address} ({token.name})</option>)}
 				</select>
 
 				<label htmlFor="initiatorSuppliedAmount">Initiator Supplied Amount:</label>
@@ -129,7 +139,7 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 					id="counterPartyCurrency"
 				>
 					<option value="">Select token address</option>
-					{tokenList.map((token, key) => <option key={key} value={token.address}>{token.address} ({token.name})</option>)}
+					{HelperUtil.tokens.map((token, key) => <option key={key} value={token.address}>{token.address} ({token.name})</option>)}
 				</select>
 
 

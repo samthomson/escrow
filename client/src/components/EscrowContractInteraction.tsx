@@ -116,19 +116,6 @@ export const ERC20ABI = [
 	}
 ] as const
 
-export const tokens: Types.Token[] = [
-	{
-		name: "TeTo",
-		address: '0x36e6040b4186F9f0Ad9b3c25a9C1c9EE58112D0a',
-		decimals: 18
-	},
-	{
-		name: "ReToke",
-		address: '0x131335C9e4B6df8966F221F83c088dDC816967bd',
-		decimals: 18
-	},
-]
-
 const EscrowContractInteraction: React.FC = () => {
 	const [agreementsCount, setAgreementsCount] = React.useState<number | undefined>(undefined);
 
