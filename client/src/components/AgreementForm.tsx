@@ -2,6 +2,7 @@ import React from 'react';
 import { ethers, Contract } from 'ethers';
 import { useWeb3React } from '@web3-react/core'
 import { BigNumber } from '@ethersproject/bignumber'
+import { useForm } from '@mantine/form';
 
 import { ERC20ABI } from './EscrowContractInteraction'
 
@@ -13,14 +14,32 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 
 	const { library } = useWeb3React();
 
+	// todo: blank these and let the user select from html control
+	const form = useForm({
+		initialValues: {
+			initiatorCurrency: '0x36e6040b4186F9f0Ad9b3c25a9C1c9EE58112D0a',// '',
+			initiatorSuppliedAmount: 1, //'',
+			counterPartyCurrency: '0x540053115bA579EB32aCddfaFe2d121340553411', //'',
+			counterPartyRequiredAmount: 2,// '',
+		},
+
+		validate: {
+			initiatorCurrency: (value: string) => value.trim().length === 42, // Simple validation for Ethereum address length
+			initiatorSuppliedAmount: (value) => !isNaN(Number(value)) && Number(value) > 0,
+			counterPartyCurrency: (value: string) => value.trim().length === 42, // Simple validation for Ethereum address length
+			counterPartyRequiredAmount: (value) => !isNaN(Number(value)) && Number(value) > 0,
+		},
+	});
+
+
 	const onSubmitAggreement = React.useCallback(async (event: { preventDefault: () => void; }) => {
 		event.preventDefault();
 
 
-		const initiatorCurrency = '0x36e6040b4186F9f0Ad9b3c25a9C1c9EE58112D0a'
-		const initiatorSuppliedAmount = 1
-		const counterPartyCurrency = '0x540053115bA579EB32aCddfaFe2d121340553411'
-		const counterPartyRequiredAmount = 2
+		const initiatorCurrency = form.values.initiatorCurrency
+		const initiatorSuppliedAmount = form.values.initiatorSuppliedAmount
+		const counterPartyCurrency = form.values.counterPartyCurrency
+		const counterPartyRequiredAmount = form.values.counterPartyRequiredAmount
 
 		try {
 			if (!!escrowContract) {
@@ -77,15 +96,49 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 		} catch (error) {
 			console.log('An error occurred: ', error);
 		}
-	}, [escrowContract])
+	}, [escrowContract, form.values])
 
 	return (
-		<>
-			<form onSubmit={onSubmitAggreement}>
-				{/* <input type="text" value={messageInput} onChange={e => setMessageInput(e.currentTarget.value)} /> */}
-				<button type="submit" className='button'>submit new agreement</button>
+		<div className='new-agreement-form'>
+
+			<form onSubmit={onSubmitAggreement} >
+				<label htmlFor="initiatorCurrency">Initiator Currency:</label>
+				<input
+					{...form.getInputProps('initiatorCurrency')}
+					id="initiatorCurrency"
+					className="your-input-class"
+				/>
+
+				<label htmlFor="initiatorSuppliedAmount">Initiator Supplied Amount:</label>
+				<input
+					{...form.getInputProps('initiatorSuppliedAmount')}
+					id="initiatorSuppliedAmount"
+					className="your-input-class"
+					type="number"
+					min="1"
+					step="any"
+				/>
+
+				<label htmlFor="counterPartyCurrency">Counterparty Currency:</label>
+				<input
+					{...form.getInputProps('counterPartyCurrency')}
+					id="counterPartyCurrency"
+					className="your-input-class"
+				/>
+
+				<label htmlFor="counterPartyRequiredAmount">Counterparty Required Amount:</label>
+				<input
+					{...form.getInputProps('counterPartyRequiredAmount')}
+					id="counterPartyRequiredAmount"
+					className="your-input-class"
+					type="number"
+					min="1"
+					step="any"
+				/>
+
+				<button type="submit">Create Agreement</button>
 			</form>
-		</>
+		</div>
 	);
 }
 

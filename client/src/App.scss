@@ -134,3 +134,40 @@ body {
     0 0 15px $highlight-color,
     0 0 20px $highlight-color;
 }
+
+.new-agreement-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing;
+
+  background-color: $primary-color;
+  padding: 2 * $spacing;
+  border: 2px solid $highlight-color;
+
+  label {
+    font-size: 1.2em;
+    color: $accent-color;
+    margin-bottom: $spacing / 2;
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    padding: $spacing / 2;
+    border: 1px solid lighten($highlight-color, 30%);
+    background-color: $secondary-color;
+    color: $accent-color;
+    margin-bottom: $spacing; // Add this line for vertical spacing
+
+    &:focus {
+      outline: none;
+      border-color: $highlight-color;
+    }
+  }
+
+  button {
+    @extend .button;
+    align-self: flex-end;
+    margin-top: $spacing;
+  }
+}
