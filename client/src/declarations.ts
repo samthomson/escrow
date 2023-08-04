@@ -10,4 +10,5 @@ export type EscrowAgreement = {
 		requiredAmount: number
 	}
 	isFilled: boolean
+	isCancelled: boolean
 }

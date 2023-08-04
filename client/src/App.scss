@@ -82,6 +82,27 @@ body {
     border: 2px solid $highlight-color;
     padding: 20px;
     background-color: $secondary-color;
+
+    &.cancelled {
+      border-color: grey; // Dull the border color
+      background-color: lighten($secondary-color, 30%); // Lighten the background color
+      color: grey; // Mute the text color
+
+      // strikethrough effect to indicate cancellation
+      position: relative;
+
+      
+      &::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: red; 
+          transform: rotate(-15deg);
+      }
+    }
 }
 
 // Style for text that should look like neon

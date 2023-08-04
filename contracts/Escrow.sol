@@ -23,12 +23,16 @@ contract Escrow {
         Initiator initiator;
         Counterparty counterparty;
         bool isFilled;
+        bool isCancelled;
     }
 
     mapping(uint256 => Agreement) public agreements;
     uint256 public agreementCounter = 0;
 
     event AgreementCreated(uint256 agreementId, address initiatorAddress, address initiatorCurrency, uint256 initiatorSuppliedAmount, address counterpartyCurrency, uint256 counterpartyRequiredAmount);
+
+
+    event AgreementCancelled(uint256 agreementId);
 
 
     function createAgreement(
@@ -60,6 +64,7 @@ contract Escrow {
         Agreement memory newAgg = Agreement(
             newInitiator,
             newCounterparty,
+            false,
             false
         );
 
@@ -68,5 +73,21 @@ contract Escrow {
         emit AgreementCreated(agreementCounter, msg.sender, initiatorCurrency, initiatorSuppliedAmount, counterPartyCurrency, counterPartyRequiredAmount);
 
         agreementCounter += 1;    
+    }
+
+    function cancelAgreement(uint256 agreementId) public {
+        // Ensure the agreement exists
+        require(agreementId < agreementCounter, "This agreement does not exist");
+
+        // Ensure the sender is the initiator of the agreement
+        require(msg.sender == agreements[agreementId].initiator.initiatorAddress, "Only the initiator can cancel this agreement");
+
+        // Ensure the agreement isn't already cancelled
+        require(!agreements[agreementId].isCancelled, "This agreement is already cancelled");
+
+        // Cancel the agreement
+        agreements[agreementId].isCancelled = true;
+
+        emit AgreementCancelled(agreementId);
     }
 }
