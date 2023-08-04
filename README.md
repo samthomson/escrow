@@ -14,3 +14,7 @@ Someone with a different public address to that of the initiator can fill the ag
 
 - better get approval need
 - can I get loading state of tx
+
+### bugs
+
+- is new allowance being calcuated correctly. seems like it's just the current/present allowance and not having the additional prospective ammount being added to it
