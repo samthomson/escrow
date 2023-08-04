@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract Escrow {
-
     using SafeERC20 for IERC20;
 
     struct Initiator {
@@ -29,8 +28,14 @@ contract Escrow {
     mapping(uint256 => Agreement) public agreements;
     uint256 public agreementCounter = 0;
 
-    event AgreementCreated(uint256 agreementId, address initiatorAddress, address initiatorCurrency, uint256 initiatorSuppliedAmount, address counterpartyCurrency, uint256 counterpartyRequiredAmount);
-
+    event AgreementCreated(
+        uint256 agreementId,
+        address initiatorAddress,
+        address initiatorCurrency,
+        uint256 initiatorSuppliedAmount,
+        address counterpartyCurrency,
+        uint256 counterpartyRequiredAmount
+    );
 
     event AgreementCancelled(uint256 agreementId);
 
@@ -43,14 +48,20 @@ contract Escrow {
         address counterPartyCurrency,
         uint256 counterPartyRequiredAmount
     ) public payable {
-        
         IERC20 token = IERC20(initiatorCurrency);
-        
+
         uint256 balanceBefore = token.balanceOf(address(this));
-        token.safeTransferFrom(msg.sender, address(this), initiatorSuppliedAmount);
+        token.safeTransferFrom(
+            msg.sender,
+            address(this),
+            initiatorSuppliedAmount
+        );
         uint256 balanceAfter = token.balanceOf(address(this));
 
-        require(balanceAfter - balanceBefore == initiatorSuppliedAmount, "Sent amount does not match the supplied amount");
+        require(
+            balanceAfter - balanceBefore == initiatorSuppliedAmount,
+            "Sent amount does not match the supplied amount"
+        );
 
         Initiator memory newInitiator = Initiator(
             msg.sender,
@@ -71,20 +82,36 @@ contract Escrow {
 
         agreements[agreementCounter] = newAgg;
 
-        emit AgreementCreated(agreementCounter, msg.sender, initiatorCurrency, initiatorSuppliedAmount, counterPartyCurrency, counterPartyRequiredAmount);
+        emit AgreementCreated(
+            agreementCounter,
+            msg.sender,
+            initiatorCurrency,
+            initiatorSuppliedAmount,
+            counterPartyCurrency,
+            counterPartyRequiredAmount
+        );
 
-        agreementCounter += 1;    
+        agreementCounter += 1;
     }
 
     function cancelAgreement(uint256 agreementId) public {
         // Ensure the agreement exists
-        require(agreementId < agreementCounter, "This agreement does not exist");
+        require(
+            agreementId < agreementCounter,
+            "This agreement does not exist"
+        );
 
         // Ensure the sender is the initiator of the agreement
-        require(msg.sender == agreements[agreementId].initiator.initiatorAddress, "Only the initiator can cancel this agreement");
+        require(
+            msg.sender == agreements[agreementId].initiator.initiatorAddress,
+            "Only the initiator can cancel this agreement"
+        );
 
         // Ensure the agreement isn't already cancelled
-        require(!agreements[agreementId].isCancelled, "This agreement is already cancelled");
+        require(
+            !agreements[agreementId].isCancelled,
+            "This agreement is already cancelled"
+        );
 
         // Cancel the agreement
         agreements[agreementId].isCancelled = true;
@@ -94,43 +121,69 @@ contract Escrow {
 
     function fillAgreement(uint256 agreementId) public payable {
         // Ensure the agreement exists
-        require(agreementId < agreementCounter, "This agreement does not exist");
-        
+        require(
+            agreementId < agreementCounter,
+            "This agreement does not exist"
+        );
+
         // Ensure the agreement is not filled
-        require(!agreements[agreementId].isFilled, "This agreement is already filled");
-        
+        require(
+            !agreements[agreementId].isFilled,
+            "This agreement is already filled"
+        );
+
         // Ensure the agreement isn't cancelled
-        require(!agreements[agreementId].isCancelled, "This agreement is cancelled");
-        
+        require(
+            !agreements[agreementId].isCancelled,
+            "This agreement is cancelled"
+        );
+
         // Get the counterparty's currency and required amount
-        address counterpartyCurrency = agreements[agreementId].counterparty.currency;
-        uint256 counterpartyRequiredAmount = agreements[agreementId].counterparty.requiredAmount;
-        
+        address counterpartyCurrency = agreements[agreementId]
+            .counterparty
+            .currency;
+        uint256 counterpartyRequiredAmount = agreements[agreementId]
+            .counterparty
+            .requiredAmount;
+
         // Create a contract instance for the counterparty's currency
         IERC20 counterpartyToken = IERC20(counterpartyCurrency);
-        
+
         // Transfer the counterparty's funds to this contract
-        counterpartyToken.safeTransferFrom(msg.sender, address(this), counterpartyRequiredAmount);
-        
+        counterpartyToken.safeTransferFrom(
+            msg.sender,
+            address(this),
+            counterpartyRequiredAmount
+        );
+
         // Ensure the transferred amount matches the required amount
-        require(counterpartyToken.balanceOf(address(this)) >= counterpartyRequiredAmount, "Transferred amount does not match the required amount");
-        
+        require(
+            counterpartyToken.balanceOf(address(this)) >=
+                counterpartyRequiredAmount,
+            "Transferred amount does not match the required amount"
+        );
+
         // Get the initiator's currency and supplied amount
         address initiatorCurrency = agreements[agreementId].initiator.currency;
-        uint256 initiatorSuppliedAmount = agreements[agreementId].initiator.suppliedAmount;
-        
+        uint256 initiatorSuppliedAmount = agreements[agreementId]
+            .initiator
+            .suppliedAmount;
+
         // Create a contract instance for the initiator's currency
         IERC20 initiatorToken = IERC20(initiatorCurrency);
-        
+
         // Transfer the initiator's funds to the counterparty
         initiatorToken.safeTransfer(msg.sender, initiatorSuppliedAmount);
-        
+
         // Transfer the counterparty's funds to the initiator
-        counterpartyToken.safeTransfer(agreements[agreementId].initiator.initiatorAddress, counterpartyRequiredAmount);
-        
+        counterpartyToken.safeTransfer(
+            agreements[agreementId].initiator.initiatorAddress,
+            counterpartyRequiredAmount
+        );
+
         // Mark the agreement as filled
         agreements[agreementId].isFilled = true;
-        
+
         emit AgreementFilled(agreementId);
     }
 }

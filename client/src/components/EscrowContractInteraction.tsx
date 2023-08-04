@@ -336,7 +336,6 @@ const EscrowContractInteraction: React.FC = () => {
 	const escrowContractRef = React.useRef<ethers.Contract | undefined>();
 
 
-
 	const fetchAgreements = React.useCallback(async () => {
 		// @ts-ignore
 		const agreementsCounter = Number(await escrowContractRef.current.agreementCounter());
@@ -360,9 +359,17 @@ const EscrowContractInteraction: React.FC = () => {
 
 	// Call this function when your component is mounted
 	const subscribeToEvents = () => {
-		// Replace 'AgreementCreated' with your actual event name
+		// reload agreements when we get a relevant event from the contract
 		escrowContractRef.current?.on("AgreementCreated", () => {
-			console.log("AGREEMENT CREATED")
+			console.log("AGREEMENT CREATED - refetch agreements")
+			fetchAgreements();
+		});
+		escrowContractRef.current?.on("AgreementCancelled", () => {
+			console.log("AGREEMENT CANCELLED - refetch agreements")
+			fetchAgreements();
+		});
+		escrowContractRef.current?.on("AgreementFilled", () => {
+			console.log("AGREEMENT FILLED - refetch agreements")
 			fetchAgreements();
 		});
 	};
