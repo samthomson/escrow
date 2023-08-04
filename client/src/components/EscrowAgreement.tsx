@@ -1,22 +1,23 @@
 import React from 'react';
-import { ethers, Contract } from 'ethers';
+import { ethers } from 'ethers';
 import classNames from 'classnames'
 import { useWeb3React } from '@web3-react/core'
 
 import * as Types from '../declarations'
 import { ERC20ABI } from './EscrowContractInteraction'
 import * as HelperUtil from '../helper'
+import { useContract } from '../hooks/useEscrowContract';
 
 interface EscrowAgreementProps {
 	id: number
 	agreement: Types.EscrowAgreement
 	myAddress: Types.Address
-	escrowContract: Contract
 }
 
-const EscrowAgreement: React.FC<EscrowAgreementProps> = ({ id, agreement, myAddress, escrowContract }) => {
+const EscrowAgreement: React.FC<EscrowAgreementProps> = ({ id, agreement, myAddress }) => {
 
 	const { library } = useWeb3React();
+	const { escrowContract } = useContract()
 
 	const isMyAgreement = agreement.initiator.initiatorAddress === myAddress
 	const { isFilled, initiator, counterparty, isCancelled } = agreement
@@ -33,6 +34,10 @@ const EscrowAgreement: React.FC<EscrowAgreementProps> = ({ id, agreement, myAddr
 	const requiredAmountWhole = ethers.formatUnits(requiredAmount.toString(), counterpartyToken?.decimals)
 
 	const cancelAgreement = async (id: number) => {
+		if (!escrowContract) {
+			console.error('contract not around')
+			return
+		}
 		// event.preventDefault();
 		// const contract = new ethers.Contract(contractAddress, contractABI, library.getSigner());
 		const tx = await escrowContract.cancelAgreement(id);
@@ -44,20 +49,23 @@ const EscrowAgreement: React.FC<EscrowAgreementProps> = ({ id, agreement, myAddr
 	const fillAgreement = React.useCallback(async (agreementId: number) => {
 
 		try {
-			if (!!escrowContract) {
-				const signer = library.getSigner();
-
-				// the erc20 we will authorize the contract to send for us to the initiator
-				const tokenContract = new ethers.Contract(counterpartyCurrency, ERC20ABI, signer);
-
-				// todo: calculate more dynamically
-				const neededAllowance = requiredAmount;
-
-				const approveTx = await tokenContract.approve(escrowContract.target, neededAllowance);
-
-				// now we instruct the escrow contract to disperse funds to each party
-				const tx = await escrowContract.fillAgreement(agreementId);
+			if (!escrowContract) {
+				console.error('contract not around')
+				return
 			}
+
+			const signer = library.getSigner();
+
+			// the erc20 we will authorize the contract to send for us to the initiator
+			const tokenContract = new ethers.Contract(counterpartyCurrency, ERC20ABI, signer);
+
+			// todo: calculate more dynamically
+			const neededAllowance = requiredAmount;
+
+			const approveTx = await tokenContract.approve(escrowContract.target, neededAllowance);
+
+			// now we instruct the escrow contract to disperse funds to each party
+			const tx = await escrowContract.fillAgreement(agreementId);
 		} catch (error) {
 			console.log('An error occurred: ', error);
 		}
