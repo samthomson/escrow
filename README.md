@@ -9,3 +9,8 @@ An initiator creates an agreement, stating which currency they'll provide and ho
 They can cancel the agreement at any time until it is filled.
 
 Someone with a different public address to that of the initiator can fill the agreement.
+
+### possible escrow next steps
+
+- better get approval need
+- can I get loading state of tx
