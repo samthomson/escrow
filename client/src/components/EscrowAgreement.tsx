@@ -13,9 +13,9 @@ interface EscrowAgreementProps {
 	escrowContract: Contract
 }
 
-const EscrowAgreement: React.FC<EscrowAgreementProps> = ({id, agreement, myAddress, escrowContract}) => {
+const EscrowAgreement: React.FC<EscrowAgreementProps> = ({ id, agreement, myAddress, escrowContract }) => {
 
-  const { library } = useWeb3React();
+	const { library } = useWeb3React();
 
 	const isMyAgreement = agreement.initiator.initiatorAddress === myAddress
 	const { isFilled, initiator, counterparty, isCancelled } = agreement
@@ -37,42 +37,42 @@ const EscrowAgreement: React.FC<EscrowAgreementProps> = ({id, agreement, myAddre
 	const fillAgreement = React.useCallback(async (agreementId: number) => {
 
 		try {
-		  if (!!escrowContract) {
-			const signer = library.getSigner();
-	  
-			// the erc20 we will authorize the contract to send for us to the initiator
-			const tokenContract = new ethers.Contract(counterpartyCurrency, ERC20ABI, signer);
-	  
-			// todo: calculate more dynamically
-			const neededAllowance = requiredAmount;
-			
-			const approveTx = await tokenContract.approve(escrowContract.target, neededAllowance);
-	  
-			// now we instruct the escrow contract to disperse funds to each party
-			const tx = await escrowContract.fillAgreement(agreementId);
-		  }
+			if (!!escrowContract) {
+				const signer = library.getSigner();
+
+				// the erc20 we will authorize the contract to send for us to the initiator
+				const tokenContract = new ethers.Contract(counterpartyCurrency, ERC20ABI, signer);
+
+				// todo: calculate more dynamically
+				const neededAllowance = requiredAmount;
+
+				const approveTx = await tokenContract.approve(escrowContract.target, neededAllowance);
+
+				// now we instruct the escrow contract to disperse funds to each party
+				const tx = await escrowContract.fillAgreement(agreementId);
+			}
 		} catch (error) {
-		  console.log('An error occurred: ', error);
+			console.log('An error occurred: ', error);
 		}
-	  
-	  }, [escrowContract]);
-	  
+
+	}, [escrowContract]);
+
 
 	return (
-		<div className={classNames('card', { cancelled: isCancelled, filled: isFilled })}>
+		<div className={classNames('card', { cancelled: isCancelled, filled: isFilled, mine: isMyAgreement })}>
 			<div className='subtitle'>
 				initiatorAddress: {initiatorAddress} {isMyAgreement && <span className='neon-text'>(you)</span>}
 			</div>
 			<hr />
 			<div className='subtitle'>offers</div>
 			<span className='neon-text'>{(+suppliedAmountWhole).toLocaleString()}</span> x <span className='neon-text'>{initiatorCurrency}</span>
-			<br/>
-			<br/>
-			<br/>
+			<br />
+			<br />
+			<br />
 			<div className='subtitle'>wants in return</div>
 			<span className='neon-text'>{(+requiredAmountWhole).toLocaleString()}</span>  of <span className='neon-text'>{counterpartyCurrency}</span>
-			<br/>
-			<br/>
+			<br />
+			<br />
 			{!isCancelled && <>
 				{isMyAgreement && !isFilled && <button className='button' onClick={() => cancelAgreement(id)}>cancel</button>}
 				{!isMyAgreement && !isFilled && <button className='button' onClick={() => fillAgreement(id)}>fill</button>}

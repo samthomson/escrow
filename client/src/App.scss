@@ -1,6 +1,6 @@
 // Define base colors
-$background-color: #000; 
-$primary-color: #252525; 
+$background-color: #000;
+$primary-color: #252525;
 $secondary-color: #1b1b1b;
 $highlight-color: #7e003b;
 $accent-color: #fff;
@@ -13,18 +13,18 @@ $spacing: 10px;
 
 
 body {
-    font-family: 'Orbitron', sans-serif;
-    background-color: $background-color;
-    color: $accent-color;
-    // overflow: hidden;
-    padding: $spacing;
+  font-family: 'Orbitron', sans-serif;
+  background-color: $background-color;
+  color: $accent-color;
+  // overflow: hidden;
+  padding: $spacing;
 }
 
 // Style for container
 .container {
-    background-color: $primary-color;
-    padding: 20px;
-    border: 1px solid $secondary-color;
+  background-color: $primary-color;
+  padding: 20px;
+  border: 1px solid $secondary-color;
 }
 
 .header {
@@ -52,77 +52,83 @@ body {
 
 // Neon buttons
 .button {
-    font-family: 'Orbitron', sans-serif;
-    background: $highlight-color;
-    color: $background-color;
-    border: none;
-    padding: 10px 20px;
-    text-transform: uppercase;
-    cursor: pointer;
-    &:hover {
-        background-color: darken($highlight-color, 10%);
-    }
+  font-family: 'Orbitron', sans-serif;
+  background: $highlight-color;
+  color: $background-color;
+  border: none;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darken($highlight-color, 10%);
+  }
 }
 
 // Title styles
 .title {
-    text-shadow: 2px 2px $secondary-color;
-    font-size: 3em;
-    margin-bottom: 20px;
+  text-shadow: 2px 2px $secondary-color;
+  font-size: 3em;
+  margin-bottom: 20px;
 }
 
 // Subtitle styles
 .subtitle {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+  font-size: 1.2em;
+  margin-bottom: 10px;
 }
 
 // Panel with Asian-influenced border
 .card {
   position: relative;
-    border: 2px solid $highlight-color;
-    padding: 20px;
-    background-color: $secondary-color;
+  border: 2px solid $highlight-color;
+  padding: 20px;
+  background-color: $secondary-color;
 
-    &.cancelled {
-      border-color: grey; // Dull the border color
-      background-color: lighten($secondary-color, 30%); // Lighten the background color
-      color: grey; // Mute the text color
+  &.mine {
+    border-style: dashed;
+    border-color: grey;
+  }
 
-      // strikethrough effect to indicate cancellation
-      position: relative;
+  &.cancelled {
+    border-color: grey; // Dull the border color
+    background-color: lighten($secondary-color, 30%); // Lighten the background color
+    color: grey; // Mute the text color
 
-      
-      &::after {
-          content: "";
-          position: absolute;
-          top: 50%;
-          left: 0;
-          width: 100%;
-          height: 2px;
-          background-color: red; 
-          transform: rotate(-15deg);
-      }
+    // strikethrough effect to indicate cancellation
+    position: relative;
+
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: red;
+      transform: rotate(-15deg);
     }
+  }
 
-    &.filled {
-      border-color: green; // Change border color to indicate completion
+  &.filled {
+    border-color: green; // Change border color to indicate completion
 
-      &::before {
-        content: "\2713"; // Unicode for check mark
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 2em;
-        color: green;
-      }
+    &::before {
+      content: "\2713"; // Unicode for check mark
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 2em;
+      color: green;
     }
+  }
 }
 
 // Style for text that should look like neon
 .neon-text {
-    color: $neon-cyan;
-    text-shadow:
+  color: $neon-cyan;
+  text-shadow:
     0 0 5px $highlight-color,
     0 0 10px $highlight-color,
     0 0 15px $highlight-color,
