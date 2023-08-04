@@ -405,7 +405,8 @@ const EscrowContractInteraction: React.FC = () => {
 					<EscrowAgreement agreement={agreement} myAddress={account as Types.Address} />
 				</div>)}
 			</div>
-			<hr />
+			{/* <hr /> */}
+			<br />
 			{
 				isConnected && <>
 					<form onSubmit={onSubmitAggreement}>

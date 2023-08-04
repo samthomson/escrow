@@ -22,7 +22,7 @@ const EscrowAgreement: React.FC<EscrowAgreementProps> = ({agreement, myAddress})
   return (
     <div className='card'>
     	<div className='subtitle'>initiatorAddress: {initiatorAddress} {isMyAgreement && <span className='neon-text'>(you)</span>}</div>
-		
+		<hr />
     	<div className='subtitle'>offers</div> <span className='neon-text'>{(+suppliedAmountWhole).toLocaleString()}</span> x <span className='neon-text'>{initiatorCurrency}</span> <br/>
 		
 		<br/><br/>
