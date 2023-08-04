@@ -4,7 +4,7 @@ import { useWeb3React } from '@web3-react/core'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useForm } from '@mantine/form';
 
-import { ERC20ABI } from './EscrowContractInteraction'
+import { ERC20ABI, tokens as tokenList } from './EscrowContractInteraction'
 
 interface AgreementFormProps {
 	escrowContract: Contract
@@ -17,16 +17,16 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 	// todo: blank these and let the user select from html control
 	const form = useForm({
 		initialValues: {
-			initiatorCurrency: '0x36e6040b4186F9f0Ad9b3c25a9C1c9EE58112D0a',// '',
-			initiatorSuppliedAmount: 1, //'',
-			counterPartyCurrency: '0x540053115bA579EB32aCddfaFe2d121340553411', //'',
-			counterPartyRequiredAmount: 2,// '',
+			initiatorCurrency: '',
+			initiatorSuppliedAmount: '',
+			counterPartyCurrency: '',
+			counterPartyRequiredAmount: '',
 		},
 
 		validate: {
 			initiatorCurrency: (value: string) => value.trim().length === 42, // Simple validation for Ethereum address length
 			initiatorSuppliedAmount: (value) => !isNaN(Number(value)) && Number(value) > 0,
-			counterPartyCurrency: (value: string) => value.trim().length === 42, // Simple validation for Ethereum address length
+			counterPartyCurrency: (value: string, values) => value.trim().length === 42 && value !== values.initiatorCurrency, // Simple validation for Ethereum address length
 			counterPartyRequiredAmount: (value) => !isNaN(Number(value)) && Number(value) > 0,
 		},
 	});
@@ -103,11 +103,14 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 
 			<form onSubmit={onSubmitAggreement} >
 				<label htmlFor="initiatorCurrency">Initiator Currency:</label>
-				<input
+				<select
 					{...form.getInputProps('initiatorCurrency')}
 					id="initiatorCurrency"
 					className="your-input-class"
-				/>
+				>
+					<option value="">Select token address</option>
+					{tokenList.map((token, key) => <option key={key} value={token.address}>{token.address} ({token.name})</option>)}
+				</select>
 
 				<label htmlFor="initiatorSuppliedAmount">Initiator Supplied Amount:</label>
 				<input
@@ -117,14 +120,19 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 					type="number"
 					min="1"
 					step="any"
+					placeholder="enter the amount you'll provide"
 				/>
 
 				<label htmlFor="counterPartyCurrency">Counterparty Currency:</label>
-				<input
+				<select
 					{...form.getInputProps('counterPartyCurrency')}
 					id="counterPartyCurrency"
-					className="your-input-class"
-				/>
+				>
+					<option value="">Select token address</option>
+					{tokenList.map((token, key) => <option key={key} value={token.address}>{token.address} ({token.name})</option>)}
+				</select>
+
+
 
 				<label htmlFor="counterPartyRequiredAmount">Counterparty Required Amount:</label>
 				<input
@@ -134,6 +142,7 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ escrowContract }) => {
 					type="number"
 					min="1"
 					step="any"
+					placeholder="enter the amount you want"
 				/>
 
 				<button type="submit">Create Agreement</button>

@@ -12,3 +12,9 @@ export type EscrowAgreement = {
 	isFilled: boolean
 	isCancelled: boolean
 }
+
+export type Token = {
+	name: string
+	address: Address
+	decimals: number
+}
