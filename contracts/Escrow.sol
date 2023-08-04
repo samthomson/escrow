@@ -34,6 +34,7 @@ contract Escrow {
 
     event AgreementCancelled(uint256 agreementId);
 
+    event AgreementFilled(uint256 agreementId);
 
     function createAgreement(
         // address,
@@ -89,5 +90,47 @@ contract Escrow {
         agreements[agreementId].isCancelled = true;
 
         emit AgreementCancelled(agreementId);
+    }
+
+    function fillAgreement(uint256 agreementId) public payable {
+        // Ensure the agreement exists
+        require(agreementId < agreementCounter, "This agreement does not exist");
+        
+        // Ensure the agreement is not filled
+        require(!agreements[agreementId].isFilled, "This agreement is already filled");
+        
+        // Ensure the agreement isn't cancelled
+        require(!agreements[agreementId].isCancelled, "This agreement is cancelled");
+        
+        // Get the counterparty's currency and required amount
+        address counterpartyCurrency = agreements[agreementId].counterparty.currency;
+        uint256 counterpartyRequiredAmount = agreements[agreementId].counterparty.requiredAmount;
+        
+        // Create a contract instance for the counterparty's currency
+        IERC20 counterpartyToken = IERC20(counterpartyCurrency);
+        
+        // Transfer the counterparty's funds to this contract
+        counterpartyToken.safeTransferFrom(msg.sender, address(this), counterpartyRequiredAmount);
+        
+        // Ensure the transferred amount matches the required amount
+        require(counterpartyToken.balanceOf(address(this)) >= counterpartyRequiredAmount, "Transferred amount does not match the required amount");
+        
+        // Get the initiator's currency and supplied amount
+        address initiatorCurrency = agreements[agreementId].initiator.currency;
+        uint256 initiatorSuppliedAmount = agreements[agreementId].initiator.suppliedAmount;
+        
+        // Create a contract instance for the initiator's currency
+        IERC20 initiatorToken = IERC20(initiatorCurrency);
+        
+        // Transfer the initiator's funds to the counterparty
+        initiatorToken.safeTransfer(msg.sender, initiatorSuppliedAmount);
+        
+        // Transfer the counterparty's funds to the initiator
+        counterpartyToken.safeTransfer(agreements[agreementId].initiator.initiatorAddress, counterpartyRequiredAmount);
+        
+        // Mark the agreement as filled
+        agreements[agreementId].isFilled = true;
+        
+        emit AgreementFilled(agreementId);
     }
 }
