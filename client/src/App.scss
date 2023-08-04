@@ -79,6 +79,7 @@ body {
 
 // Panel with Asian-influenced border
 .card {
+  position: relative;
     border: 2px solid $highlight-color;
     padding: 20px;
     background-color: $secondary-color;
@@ -101,6 +102,19 @@ body {
           height: 2px;
           background-color: red; 
           transform: rotate(-15deg);
+      }
+    }
+
+    &.filled {
+      border-color: green; // Change border color to indicate completion
+
+      &::before {
+        content: "\2713"; // Unicode for check mark
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 2em;
+        color: green;
       }
     }
 }
