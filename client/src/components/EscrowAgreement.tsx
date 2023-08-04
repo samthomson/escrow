@@ -75,7 +75,7 @@ const EscrowAgreement: React.FC<EscrowAgreementProps> = ({id, agreement, myAddre
 			<br/>
 			{!isCancelled && <>
 				{isMyAgreement && !isFilled && <button className='button' onClick={() => cancelAgreement(id)}>cancel</button>}
-				{!isMyAgreement && !isFilled && <button className='button' onClick={() => fillAgreement(id)}>[fill]</button>}
+				{!isMyAgreement && !isFilled && <button className='button' onClick={() => fillAgreement(id)}>fill</button>}
 			</>}
 		</div>
 	);
